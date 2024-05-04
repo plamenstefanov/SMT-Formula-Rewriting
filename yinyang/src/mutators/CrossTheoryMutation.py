@@ -1,6 +1,8 @@
 import random
 from yinyang.src.mutators.Mutator import Mutator
 
+# added imports
+from yinyang.src.parsing.Ast import *
 
 class CrossTheoryMutation(Mutator):
     def __init__(self, formula, args):
@@ -83,7 +85,21 @@ class CrossTheoryMutation(Mutator):
         pass
 
     def get_replacement_term(self, term_in_cmd):
-        pass
+        operator = "and"
+        term_rhs = None
+        replacement_term = None
+        free_vars_in_term = self.formula._get_free_var_occs(term_in_cmd, self.formula.global_vars) #TODO: Can we access this function?
+        for _ in range(free_vars_in_term):
+            var_in_term = random.choice(free_vars_in_term)
+            type_of_var_in_term = self.formula.types[var_in_term]
+            if(type_of_var_in_term == "Int" or type_of_var_in_term == "Real"):
+                term_rhs = Term(op=">", subterms=[var_in_term, "0"]) #TODO: I have no idea how to define/declare this term. I want "x > 0".
+                break
+                
+        if term_rhs:
+            replacement_term = Term(op=operator, subterms=[term_in_cmd, term_rhs])
+            
+        return replacement_term
 
     def mutate(self):
         mutation_idx = random.randint(0, 2)
