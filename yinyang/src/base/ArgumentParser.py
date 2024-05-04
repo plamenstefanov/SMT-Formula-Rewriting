@@ -226,6 +226,18 @@ def build_opfuzz_parser(current_dir, usage):
 
     return parser
 
+def build_crossfuzz_parser(current_dir, usage):
+    parser = ArgumentParser(
+        description="",
+        usage=usage,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=False,
+    )
+    add_common_args(parser, ROOTPATH, current_dir)
+    add_opfuzz_args(parser, ROOTPATH, current_dir)
+
+    return parser
+
 
 def build_typefuzz_parser(current_dir, usage):
     parser = ArgumentParser(
