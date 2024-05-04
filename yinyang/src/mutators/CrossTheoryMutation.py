@@ -68,8 +68,6 @@ class CrossTheoryMutation(Mutator):
     #         return replacee
     #     return None
 
-    def get_replacement_var(self, var_in_formula):
-        pass
 
     def get_replacement_type(self, var_in_formula):
         type_of_var = self.formula.types[var_in_formula.name]
@@ -80,6 +78,12 @@ class CrossTheoryMutation(Mutator):
             replacement_type = "Int" # or "(Int)" ?
 
         return replacement_type
+
+    def get_replacement_var(self, var_in_formula):
+        pass
+
+    def get_replacement_term(self, term_in_cmd):
+        pass
 
     def mutate(self):
         mutation_idx = random.randint(0, 2)
@@ -106,8 +110,20 @@ class CrossTheoryMutation(Mutator):
         return self.formula, success, False
 
     def mutate_term(self):
-        #TODO
-        pass
+        #TODO: test/verify this implementation
+        success = False
+        for _ in range(self.args.modulo): # Q: what is modulo?
+            max_choices = len(self.formula.assert_cmd)
+            for _ in range(max_choices):
+                assert_cmd_in_formula = random.choice(self.formula.assert_cmd)
+                term_in_cmd = assert_cmd_in_formula.term
+                replacement_term = self.get_replacement_term(term_in_cmd)
+                if replacement_term:
+                    success = True
+                    assert_cmd_in_formula.term = replacement_term
+                    break
+
+        return self.formula, success, False
 
     def mutate_var(self):
         # TODO: test/verify this implementation
