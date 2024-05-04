@@ -36,6 +36,7 @@ from yinyang.src.core.Solver import Solver, SolverQueryResult, SolverResult
 from yinyang.src.parsing.Parse import parse_file
 from yinyang.src.parsing.Typechecker import typecheck
 
+from yinyang.src.mutators.CrossTheoryMutation import CrossTheoryMutation
 from yinyang.src.mutators.TypeAwareOpMutation import TypeAwareOpMutation
 from yinyang.src.mutators.SemanticFusion.SemanticFusion import SemanticFusion
 from yinyang.src.mutators.GenTypeAwareMutation.Util import get_unique_subterms
@@ -164,6 +165,12 @@ class Fuzzer:
                 if not script1 or not script2:
                     continue
                 self.mutator = SemanticFusion(script1, script2, self.args)
+
+            elif self.strategy == "crossfuzz":
+                script, _ = self.get_script(seed)
+                if not script:
+                    continue
+                self.mutator = CrossTheoryMutation(script, self.args)            
 
             else:
                 assert False
