@@ -19,11 +19,30 @@ class CrossTheoryMutation(Mutator):
 
         return replacement_type
 
-    def get_replacement_var(self, var_in_formula): # perhaps we don't need this because the var we will replace is a term in the AST
-        pass                                       # Hence, we can work with "get_replacement_term" and do a case distinction.
+    def get_replacement_var(self, term_to_replace, kind_of_mutation): 
+        replacement_term = None
+        # kind_of_mutation == 0 is equivalent to Table 2, first row, original to mutant
+        if (kind_of_mutation == 0):
+            inner_term = Term(op="sqrt", subterms=[term_to_replace])    # TODO: Again, no idea if this is the right way to declare these terms
+            outer_term = Term(op="pow", subterms=[inner_term, "2"])     # TODO: Again, no idea if this is the right way to declare these terms
+            replacement_term = outer_term
+
+            return replacement_term
+        
+        # kind_of_mutation == 1 is equivalent to Table 2, second row, original to mutant
+        elif (kind_of_mutation == 1):
+            inner_term = Term(op="^", subterms=[term_to_replace, "2"])    # TODO: Again, no idea if this is the right way to declare these terms
+            outer_term = Term(op="log", subterms=["2", inner_term])       # TODO: Again, no idea if this is the right way to declare these terms
+            replacement_term = outer_term
+
+            return replacement_term        
+
 
     def get_replacement_term(self, term_in_cmd, kind_of_mutation):
-        if (kind_of_mutation == 1):
+        replacement_term = None
+
+        # kind_of_mutation == 0 is equivalent to Table 1, second row, weak to strong
+        if (kind_of_mutation == 0):
             operator = "and"
             term_rhs = None
             replacement_term = None
@@ -40,7 +59,8 @@ class CrossTheoryMutation(Mutator):
                 
             return replacement_term
         
-        elif (kind_of_mutation == 2):
+        # kind_of_mutation == 1 is equivalent to Table 1, third row, weak to strong
+        elif (kind_of_mutation == 1):
             operator = "and"
             term_rhs = None
             replacement_term = None
@@ -56,9 +76,7 @@ class CrossTheoryMutation(Mutator):
                 replacement_term = Term(op=operator, subterms=[term_in_cmd, term_rhs])
                 
             return replacement_term
-        
-        elif (kind_of_mutation == 0):
-            pass
+
 
     def mutate(self):
         mutation_idx = random.randint(0, 2)
@@ -101,13 +119,14 @@ class CrossTheoryMutation(Mutator):
         return self.formula, success, False
 
     def mutate_var(self):
-        # TODO: test/verify this implementation
+        # TODO: test/verify this implementation. 
+        # TODO: We need to work with the terms that represent the vars, not the vars themselves. Change.
         success = False
         for _ in range(self.args.modulo): # Q: what is modulo?
             max_choices = len(self.formula.vars)
             for _ in range(max_choices):
                 var_in_formula = random.choice(self.formula.vars)
-                replacement_var = self.get_replacement_var(var_in_formula)
+                replacement_var = self.get_replacement_var(var_in_formula) 
                 if replacement_var:
                     success = True
                     self.formula.vars.append(replacement_var)
