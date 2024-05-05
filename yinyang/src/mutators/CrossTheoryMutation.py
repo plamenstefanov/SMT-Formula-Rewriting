@@ -8,68 +8,6 @@ class CrossTheoryMutation(Mutator):
     def __init__(self, formula, args):
         self.args = args
         self.formula = formula
-        self.bidirectional = []     # do we need this?
-        self.unidirectional = []    # do we need this?
-
-        self.parse_config_file()    # do we need this?
-
-    # def parse_config_file(self):
-    #     with open(self.args.config) as f:
-    #         lines = f.readlines()
-
-    #     for line in lines:
-    #         if ";" in line:
-    #             continue
-    #         if not line.strip():
-    #             continue
-    #         arity = -1
-    #         if ":arity" in line:
-    #             arity = line.split(":arity")[-1].split(" ")[-1].strip()
-    #             line = " ".join(line.split(" ")[:-2])
-    #         if "->" in line:
-    #             op_from = line.split("->")[0].strip()
-    #             op_to = line.split("->")[1].strip()
-    #             self.unidirectional.append((arity, op_from, op_to))
-    #             continue
-
-    #         op_class = [op.strip() for op in line.split(",")]
-    #         self.bidirectional.append((arity, op_class))
-
-    # def arities_mismatch(self, arity, op_occ):
-    #     if arity == "2+" and len(op_occ.subterms) < 2:
-    #         return True
-
-    #     if arity == "1-" and len(op_occ.subterms) > 2:
-    #         return True
-    #     return False
-
-    # def get_replacee(self, op_occ):
-    #     for b in self.bidirectional:
-    #         arity, op_class = b[0], b[1]
-    #         if self.arities_mismatch(arity, op_occ):
-    #             continue
-
-    #         if op_occ.op in op_class:
-    #             diff = op_class.copy()
-    #             diff.remove(op_occ.op)
-    #             replacee = random.choice(diff)
-    #             return replacee
-
-    #         if op_occ.quantifier in op_class:
-    #             diff = op_class.copy()
-    #             diff.remove(op_occ.quantifier)
-    #             replacee = random.choice(diff)
-    #             return replacee
-
-    #     for u in self.unidirectional:
-    #         arity, op, replacee = u[0], u[1], u[2]
-    #         if op_occ.op != op or op_occ.quantifier != op:
-    #             continue
-    #         if self.arities_mismatch(arity, op_occ):
-    #             continue
-    #         return replacee
-    #     return None
-
 
     def get_replacement_type(self, var_in_formula):
         type_of_var = self.formula.types[var_in_formula.name]
@@ -81,25 +19,46 @@ class CrossTheoryMutation(Mutator):
 
         return replacement_type
 
-    def get_replacement_var(self, var_in_formula):
+    def get_replacement_var(self, var_in_formula): # perhaps we don't need this because the var we will replace is a term in the AST
         pass
 
-    def get_replacement_term(self, term_in_cmd):
-        operator = "and"
-        term_rhs = None
-        replacement_term = None
-        free_vars_in_term = self.formula._get_free_var_occs(term_in_cmd, self.formula.global_vars) #TODO: Can we access this function?
-        for _ in range(free_vars_in_term):
-            var_in_term = random.choice(free_vars_in_term)
-            type_of_var_in_term = self.formula.types[var_in_term]
-            if(type_of_var_in_term == "Int" or type_of_var_in_term == "Real"):
-                term_rhs = Term(op=">", subterms=[var_in_term, "0"]) #TODO: I have no idea how to define/declare this term. I want "x > 0".
-                break
+    def get_replacement_term(self, term_in_cmd, kind_of_mutation):
+        if (kind_of_mutation == 1):
+            operator = "and"
+            term_rhs = None
+            replacement_term = None
+            free_vars_in_term = self.formula._get_free_var_occs(term_in_cmd, self.formula.global_vars) #TODO: Can we access this function?
+            for _ in range(free_vars_in_term):
+                var_in_term = random.choice(free_vars_in_term)
+                type_of_var_in_term = self.formula.types[var_in_term]
+                if(type_of_var_in_term == "Int" or type_of_var_in_term == "Real"):
+                    term_rhs = Term(op=">", subterms=[var_in_term, "0"]) #TODO: I have no idea how to define/declare this term. I want "x > 0".
+                    break
+                    
+            if term_rhs:
+                replacement_term = Term(op=operator, subterms=[term_in_cmd, term_rhs])
                 
-        if term_rhs:
-            replacement_term = Term(op=operator, subterms=[term_in_cmd, term_rhs])
-            
-        return replacement_term
+            return replacement_term
+        
+        elif (kind_of_mutation == 2):
+            operator = "and"
+            term_rhs = None
+            replacement_term = None
+            free_vars_in_term = self.formula._get_free_var_occs(term_in_cmd, self.formula.global_vars) #TODO: Can we access this function?
+            for _ in range(free_vars_in_term):
+                var_in_term = random.choice(free_vars_in_term)
+                type_of_var_in_term = self.formula.types[var_in_term]
+                if(type_of_var_in_term == "Int" or type_of_var_in_term == "Real"):
+                    term_rhs = Term(op="<", subterms=[var_in_term, "0"]) #TODO: I have no idea how to define/declare this term. I want "x < 0".
+                    break
+                    
+            if term_rhs:
+                replacement_term = Term(op=operator, subterms=[term_in_cmd, term_rhs])
+                
+            return replacement_term
+        
+        elif (kind_of_mutation == 0):
+            pass
 
     def mutate(self):
         mutation_idx = random.randint(0, 2)
@@ -133,7 +92,7 @@ class CrossTheoryMutation(Mutator):
             for _ in range(max_choices):
                 assert_cmd_in_formula = random.choice(self.formula.assert_cmd)
                 term_in_cmd = assert_cmd_in_formula.term
-                replacement_term = self.get_replacement_term(term_in_cmd)
+                replacement_term = self.get_replacement_term(term_in_cmd, 1)
                 if replacement_term:
                     success = True
                     assert_cmd_in_formula.term = replacement_term
