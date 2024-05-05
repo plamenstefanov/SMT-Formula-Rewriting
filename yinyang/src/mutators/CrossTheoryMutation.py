@@ -20,7 +20,7 @@ class CrossTheoryMutation(Mutator):
         return replacement_type
 
     def get_replacement_var(self, var_in_formula): # perhaps we don't need this because the var we will replace is a term in the AST
-        pass
+        pass                                       # Hence, we can work with "get_replacement_term" and do a case distinction.
 
     def get_replacement_term(self, term_in_cmd, kind_of_mutation):
         if (kind_of_mutation == 1):
