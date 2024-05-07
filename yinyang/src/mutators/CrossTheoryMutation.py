@@ -3,14 +3,16 @@ from yinyang.src.mutators.Mutator import Mutator
 
 # added imports
 from yinyang.src.parsing.Ast import *
+import pdb
+pdb.set_trace()
 
 class CrossTheoryMutation(Mutator):
     def __init__(self, formula, args):
         self.args = args
         self.formula = formula
 
-    def get_replacement_type(self, var_in_formula):
-        type_of_var = self.formula.types[var_in_formula.name]
+    def get_replacement_type(self, type_of_var):
+        #type_of_var = self.formula.types[var_in_formula.name]
         replacement_type = None
         if(str(type_of_var) == "Int"): # TODO: I don't know if I should expect to read "Int" here. Verify.
             replacement_type = "Real" # or "(Real)" ?
@@ -79,27 +81,48 @@ class CrossTheoryMutation(Mutator):
 
 
     def mutate(self):
-        mutation_idx = random.randint(0, 2)
+        mutation_idx = 0
         if (mutation_idx == 0):
-            self.mutate_type()
+            #print("idx0", mutation_idx)
+            #print()
+            return self.mutate_type()
         elif (mutation_idx == 1):
-            self.mutate_term()
+            print("idx1", mutation_idx)
+            print()
+            return self.mutate_term()
         elif (mutation_idx == 2):
-            self.mutate_var()
+            print("idx2", mutation_idx)
+            print()
+            return self.mutate_var()
 
     def mutate_type(self):
         #TODO: test/verify this implementation
         success = False
         for _ in range(self.args.modulo): # Q: what is modulo?
-            max_choices = len(self.formula.vars)
+            max_choices = len(self.formula.global_vars)
+            #print("max_choices :", max_choices)
             for _ in range(max_choices):
-                var_in_formula = random.choice(self.formula.vars)
-                replacement_type = self.get_replacement_type(var_in_formula)
+                #print("global vars", self.formula.global_vars)
+                #print("global vars", list(self.formula.global_vars.keys()))
+                #print(random.choice(list(self.formula.global_vars.keys())))
+                #print(list(self.formula.global_vars.keys()))
+                var_in_formula = random.choice(list(self.formula.global_vars.keys()))
+                type_of_var = self.formula.global_vars[var_in_formula]
+                #print("var_in_formula ::: %s, type_of_var ::: %s" % (var_in_formula, type_of_var))
+                replacement_type = self.get_replacement_type(type_of_var)
+                #print("replacement_type :", replacement_type)
                 if replacement_type:
                     success = True
-                    self.formula.types[var_in_formula.name] = replacement_type
+                    self.formula.global_vars[var_in_formula] = replacement_type
+                    #print(self.formula.global_vars[var_in_formula])
                     break
-
+        
+        print("global vars", self.formula.global_vars)
+        print("formula", self.formula)
+        breakpoint()
+        print("success", success)
+        print()
+        #print("skip_seed", False)
         return self.formula, success, False
 
     def mutate_term(self):
@@ -115,7 +138,9 @@ class CrossTheoryMutation(Mutator):
                     success = True
                     assert_cmd_in_formula.term = replacement_term
                     break
-
+        print("formula", self.formula)
+        print("success", self.success)
+        print("skip_seed", False)
         return self.formula, success, False
 
     def mutate_var(self):
@@ -132,5 +157,7 @@ class CrossTheoryMutation(Mutator):
                     self.formula.vars.append(replacement_var)
                     self.formula.types[replacement_var.name] = replacement_var.type
                     break
-
+        print("formula", self.formula)
+        print("success", success)
+        print("skip_seed", False)
         return self.formula, success, False 

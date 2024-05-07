@@ -112,7 +112,7 @@ def add_opfuzz_args(parser, rootpath, current_dir):
     parser.add_argument(
         "-i",
         "--iterations",
-        default=300,
+        default=3,
         metavar="<N>",
         type=int,
     )
@@ -138,6 +138,7 @@ def add_opfuzz_args(parser, rootpath, current_dir):
 
 
 def add_typefuzz_args(parser, rootpath, current_dir):
+    #add_argument(X) - used to populate the parser with actions (X) for optional and positional arguments 
     parser.add_argument(
         "-i",
         "--iterations",
@@ -165,7 +166,6 @@ def add_typefuzz_args(parser, rootpath, current_dir):
         default=rootpath + "/yinyang/config/typefuzz_config.txt",
     )
 
-
 def add_yinyang_args(parser, rootpath, current_dir):
     parser.add_argument(
         "-o",
@@ -177,7 +177,7 @@ def add_yinyang_args(parser, rootpath, current_dir):
     parser.add_argument(
         "-i",
         "--iterations",
-        default=30,
+        default=50,
         metavar="<N>",
         type=int,
     )
@@ -221,6 +221,11 @@ def build_opfuzz_parser(current_dir, usage):
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False,
     )
+    #parser is an ArgumentParser (object for parsing command line strings into Python objects)
+    #parser.prog
+    #parser.add_argument
+    #parser.usage
+    #... - you can use all properties of the ArgumentParser object
     add_common_args(parser, ROOTPATH, current_dir)
     add_opfuzz_args(parser, ROOTPATH, current_dir)
 

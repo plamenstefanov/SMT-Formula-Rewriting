@@ -98,7 +98,9 @@ class Fuzzer:
             return None, None
 
         self.currentseeds.append(pathlib.Path(seed).stem)
+        #seed = path to SMT-LIB file
         script, glob = parse_file(seed, silent=True)
+        # parse_file - returns seed SMT-LIB file as Script object that is an AST of the SMT-LIB file
 
         if not script:
 
@@ -137,16 +139,29 @@ class Fuzzer:
         mutator and then generates `self.args.iterations` many iterations per
         seed.
         """
+        # SMT-LIB file has 1 formula
+        # "Randomly pops an SMT-LIB file from the seed list"
+        # -> Line 147
         seeds, num_seeds = get_seeds(self.args, self.strategy)
         num_targets = len(self.args.SOLVER_CLIS)
         log_strategy_num_seeds(self.strategy, num_seeds, num_targets)
 
         for seed in seeds:
+            print("new SMT-LIB file")
+            print("################################")
+            print("################################")
+            print("################################")
+            print("################################")
             if self.strategy == "typefuzz":
+                # "Parses seed" 
+                # -> Line 154
+                # script = formula = parsed_seed(seed) = self.get_script(seed)
                 script, glob = self.get_script(seed)
                 if not script:
                     continue
 
+                # "Type-checks the SMT-LIB file (seed)" 
+                # -> Line 184
                 typecheck(script, glob)
                 script_cp = copy.deepcopy(script)
                 unique_expr = get_unique_subterms(script_cp)
@@ -168,10 +183,34 @@ class Fuzzer:
 
             elif self.strategy == "crossfuzz":
                 script, _ = self.get_script(seed)
+                print("script")
+                print(script)
+                print()
+                print("script.cmds")
+                print(script.commands)
+                print()
+                print("script.vars")
+                print(script.vars)
+                print()
+                print("script.types")
+                print(script.types)
+                print()
+                print("script.global_vars")
+                print(script.global_vars)
+                print()
+                print("script.free_var_occs")
+                print(script.free_var_occs)
+                print()
+                print("script.op_occs")
+                for x in range(len(script.op_occs)):
+                    print (script.op_occs[x]),
+                print()
+                print("script.assert_cmd")
+                print(script.assert_cmd)
+                print()
                 if not script:
                     continue
                 self.mutator = CrossTheoryMutation(script, self.args)            
-
             else:
                 assert False
 
@@ -180,10 +219,20 @@ class Fuzzer:
             unsuccessful_gens = 0
             successful_gens = 0
             self.timeout_of_current_seed = 0
-            for i in range(self.args.iterations):
-                self.print_stats()
-                mutant, success, skip_seed = self.mutator.mutate()
 
+            # "The mutator is then called in a for-loop realizing n consecutive mutations"
+            # -> Line 224
+            for i in range(self.args.iterations): #parser.add_argument(--iterations, default=..)
+                self.print_stats()
+                print("----------------------------------------------------------------")
+                print("script BEFORE mutation")
+                print(self.mutator.formula)
+                print()
+                mutant, success, skip_seed = self.mutator.mutate()
+                print("AFTER mutation")
+                print(self.mutator.formula)
+                print("----------------------------------------------------------------")
+                print()
                 # Reason for unsuccessful generation: randomness in the
                 # mutator to more efficiently generate mutants.
                 if not success:
@@ -200,6 +249,8 @@ class Fuzzer:
                     log_skip_seed_mutator(self.args, i)
                     break  # Continue to next seed.
 
+                # "Each mutated formula is then passed to the SMT solvers under test which checks for bugs"
+                # "Dumps the bug triggers to the disk"
                 (mutate_further, scratchfile) = self.test(mutant, i + 1)
                 if not mutate_further:  # Continue to next seed.
                     log_skip_seed_test(self.args, i)
@@ -221,7 +272,7 @@ class Fuzzer:
         """
         testbook = []
         testcase = "%s/%s-%s-%s.smt2" % (
-            self.args.scratchfolder,
+            self.args.scratchfolder, #./scratch
             escape("-".join(self.currentseeds)),
             self.name,
             random_string(),
@@ -388,14 +439,16 @@ class Fuzzer:
         plain_cli = plain(cli)
         # format: <solver><{crash,wrong,invalid_model}><seed>.<random-str>.smt2
         report = "%s/%s-%s-%s-%s.smt2" % (
-            self.args.bugsfolder,
+            self.args.bugsfolder, #bugsfolder := ./bugs
             bugtype,
             plain_cli,
             escape("-".join(self.currentseeds)),
             random_string(),
         )
+        #report = folder(./bugs) + file (.smt2)
         try:
-            with open(report, "w") as report_writer:
+            with open(report, "w") as report_writer: 
+                #open the ./bugs folder & write into the .smt2 file in it the script/formula that triggered the bug
                 report_writer.write(script.__str__())
         except Exception:
             logging.error("error: couldn't copy scratchfile to bugfolder.")
