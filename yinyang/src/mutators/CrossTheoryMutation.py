@@ -3,8 +3,8 @@ from yinyang.src.mutators.Mutator import Mutator
 
 # added imports
 from yinyang.src.parsing.Ast import *
-import pdb
-pdb.set_trace()
+# import pdb
+# pdb.set_trace()
 
 class CrossTheoryMutation(Mutator):
     def __init__(self, formula, args):
@@ -98,28 +98,39 @@ class CrossTheoryMutation(Mutator):
     def mutate_type(self):
         #TODO: test/verify this implementation
         success = False
-        for _ in range(self.args.modulo): # Q: what is modulo?
-            max_choices = len(self.formula.global_vars)
+        # for _ in range(self.args.modulo): # Q: what is modulo?
+            # max_choices = len(self.formula.global_vars)
             #print("max_choices :", max_choices)
-            for _ in range(max_choices):
+            # for _ in range(max_choices):
                 #print("global vars", self.formula.global_vars)
                 #print("global vars", list(self.formula.global_vars.keys()))
                 #print(random.choice(list(self.formula.global_vars.keys())))
                 #print(list(self.formula.global_vars.keys()))
-                var_in_formula = random.choice(list(self.formula.global_vars.keys()))
-                type_of_var = self.formula.global_vars[var_in_formula]
-                #print("var_in_formula ::: %s, type_of_var ::: %s" % (var_in_formula, type_of_var))
-                replacement_type = self.get_replacement_type(type_of_var)
-                #print("replacement_type :", replacement_type)
-                if replacement_type:
-                    success = True
-                    self.formula.global_vars[var_in_formula] = replacement_type
-                    #print(self.formula.global_vars[var_in_formula])
-                    break
-        
+        var_in_formula = random.choice(list(self.formula.global_vars.keys()))
+        type_of_var = self.formula.global_vars[var_in_formula]
+        #print("var_in_formula ::: %s, type_of_var ::: %s" % (var_in_formula, type_of_var))
+        replacement_type = self.get_replacement_type(type_of_var)
+        #print("replacement_type :", replacement_type)
+        if replacement_type:
+            success = True
+            self.formula.global_vars[var_in_formula] = replacement_type
+
+            for cmd in self.formula.commands:
+                if (isinstance(cmd, DeclareFun) and cmd.symbol == var_in_formula):
+                    cmd.output_sort = replacement_type
+
+            for var_oc in self.formula.free_var_occs:
+                if (var_oc == var_in_formula):
+                    var_oc.type = replacement_type
+
+                #print(self.formula.global_vars[var_in_formula])
+                # break
+    
         print("global vars", self.formula.global_vars)
+        # breakpoint()
         print("formula", self.formula)
-        breakpoint()
+        print("free var occs", self.formula.free_var_occs)
+        # breakpoint()
         print("success", success)
         print()
         #print("skip_seed", False)

@@ -251,14 +251,14 @@ class Fuzzer:
 
                 # "Each mutated formula is then passed to the SMT solvers under test which checks for bugs"
                 # "Dumps the bug triggers to the disk"
-                (mutate_further, scratchfile) = self.test(mutant, i + 1)
-                if not mutate_further:  # Continue to next seed.
-                    log_skip_seed_test(self.args, i)
-                    break  # Continue to next seed.
+                # (mutate_further, scratchfile) = self.test(mutant, i + 1)
+                # if not mutate_further:  # Continue to next seed.
+                #     log_skip_seed_test(self.args, i)
+                #     break  # Continue to next seed.
 
-                self.statistic.mutants += 1
-                if not self.args.keep_mutants:
-                    os.remove(scratchfile)
+                # self.statistic.mutants += 1
+                # if not self.args.keep_mutants:
+                #     os.remove(scratchfile)
 
             log_finished_generations(successful_gens, unsuccessful_gens)
         self.terminate()

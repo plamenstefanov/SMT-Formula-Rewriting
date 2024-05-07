@@ -112,24 +112,6 @@ class Script:
         for s in e.subterms:
             self._prefix_free_vars(prefix, s)
 
-    def prefix_vars2(self, prefix):
-        """
-        Add a shared prefix to all variables
-        :prefix: str
-        """
-        for cmd in self.commands:
-            if isinstance(cmd, DeclareConst):
-                cmd.symbol = prefix + cmd.symbol
-            if isinstance(cmd, DeclareFun):
-                if cmd.input_sort == "":
-                    cmd.symbol = prefix + cmd.symbol
-            if isinstance(cmd, Assert):
-                self._prefix_free_vars(prefix, cmd.term)
-        new_global_vars = {}
-        for global_var in self.global_vars:
-            new_global_vars[prefix + global_var] = self.global_vars[global_var]
-        self.global_vars = new_global_vars
-        #self.vars, self.types = self._decl_commands()
 
     def prefix_vars(self, prefix):
         """
