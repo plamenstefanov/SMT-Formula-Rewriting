@@ -25,6 +25,7 @@ import os
 import sys
 import signal
 import inspect
+import logging
 from pathlib import Path
 
 path = Path(__file__)
@@ -52,16 +53,27 @@ from yinyang.config.TypefuzzHelptext import (
 
 def main():
     parser = build_typefuzz_parser(current_dir, usage)
+    #parser is an ArgumentParser (object for parsing command line strings into Python objects)
+    #parser.prog
+    #parser.add_argument
+    #parser.usage
+    #... - you can use all properties of the ArgumentParser object
+    print("typefuzz(.py)")
+    print("--------------------------------")
+    print("parser.prog ", parser.prog)
+    print("parser.usage ", parser.usage)
+    print("parser.description ", parser.description)
+    print("parser.argument_default ", parser.argument_default)
+    #parser functions used - parser.parse_args(), parser.add_argument(), parser.start()
+
+    
 
     if len(sys.argv) == 1:
-
         # Show medium-length description when called without args containing
         # one example and the usage dialogue.
         print(header + "\n\nusage:" + usage + short_description, flush=True)
         exit(ERR_USAGE)
-
     elif "-h" in sys.argv or "--help" in sys.argv:
-
         # If called for help, show long description containing general
         # information on opfuzz, two examples with in-depth explanation,
         # and the usage dialogue.
@@ -78,9 +90,18 @@ def main():
             flush=True,
         )
         exit(OK_NOBUGS)
-
+        print("--------------------------------")
     else:
         args = run_checks(parser, "typefuzz")
+        #run_checks goes through the directory specified on the cmd line and looks for all files ending with .smt2
+        #args.PATH_TO_SEEDS = list of .smt2 files
+        #args = parse_args() := converts what is passed on the cmd line into object with attributes
+        #args = Namespace() object := simple object for storing attributes
+        #look into argsparse, parse_args(), parse_known_args()
+        #print("parser.parse_args() ", args)
+        #print("parser.action groups")
+        #print(parser._action_groups)
+
         try:
             fuzzer = Fuzzer(args, "typefuzz")
 
@@ -103,6 +124,7 @@ def main():
                 exit(OK_BUGS)
 
             if not args.quiet:
+                
                 signal.signal(signal.SIGINT, stats_control_c)
             else:
                 signal.signal(signal.SIGINT, silent_control_c)
