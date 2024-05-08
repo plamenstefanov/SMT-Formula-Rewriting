@@ -120,7 +120,10 @@ class CrossTheoryMutation(Mutator):
                     cmd.output_sort = replacement_type
 
             for var_oc in self.formula.free_var_occs:
-                if (var_oc == var_in_formula):
+                # print("var_oc: ", var_oc)
+                # print("var_in_formula: ", var_in_formula)
+                if (str(var_oc) == str(var_in_formula)):
+                    # print("in here")
                     var_oc.type = replacement_type
 
                 #print(self.formula.global_vars[var_in_formula])
