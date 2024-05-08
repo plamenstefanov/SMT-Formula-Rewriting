@@ -112,7 +112,7 @@ def add_opfuzz_args(parser, rootpath, current_dir):
     parser.add_argument(
         "-i",
         "--iterations",
-        default=5,
+        default=1,
         metavar="<N>",
         type=int,
     )

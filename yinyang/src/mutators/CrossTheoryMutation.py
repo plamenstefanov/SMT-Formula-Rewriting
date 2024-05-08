@@ -81,7 +81,7 @@ class CrossTheoryMutation(Mutator):
 
 
     def mutate(self):
-        mutation_idx = 0
+        mutation_idx = 2
         if (mutation_idx == 0):
             #print("idx0", mutation_idx)
             #print()
@@ -96,16 +96,7 @@ class CrossTheoryMutation(Mutator):
             return self.mutate_var()
 
     def mutate_type(self):
-        #TODO: test/verify this implementation
         success = False
-        # for _ in range(self.args.modulo): # Q: what is modulo?
-            # max_choices = len(self.formula.global_vars)
-            #print("max_choices :", max_choices)
-            # for _ in range(max_choices):
-                #print("global vars", self.formula.global_vars)
-                #print("global vars", list(self.formula.global_vars.keys()))
-                #print(random.choice(list(self.formula.global_vars.keys())))
-                #print(list(self.formula.global_vars.keys()))
         var_in_formula = random.choice(list(self.formula.global_vars.keys()))
         type_of_var = self.formula.global_vars[var_in_formula]
         #print("var_in_formula ::: %s, type_of_var ::: %s" % (var_in_formula, type_of_var))
@@ -120,23 +111,15 @@ class CrossTheoryMutation(Mutator):
                     cmd.output_sort = replacement_type
 
             for var_oc in self.formula.free_var_occs:
-                # print("var_oc: ", var_oc)
-                # print("var_in_formula: ", var_in_formula)
                 if (str(var_oc) == str(var_in_formula)):
-                    # print("in here")
                     var_oc.type = replacement_type
-
-                #print(self.formula.global_vars[var_in_formula])
-                # break
     
         print("global vars", self.formula.global_vars)
-        # breakpoint()
         print("formula", self.formula)
         print("free var occs", self.formula.free_var_occs)
-        # breakpoint()
         print("success", success)
         print()
-        #print("skip_seed", False)
+
         return self.formula, success, False
 
     def mutate_term(self):
@@ -156,24 +139,45 @@ class CrossTheoryMutation(Mutator):
         print("success", self.success)
         print("skip_seed", False)
         return self.formula, success, False
+    
+    def execute_mutation(self, term, parent_term, assert_cmd):
+        if term.is_var:
+            # print("in assert_cmd: ", assert_cmd.term)
+            # print("in assert_cmd_sub: ", assert_cmd.term.subterms[0])
+            print("found a var: ", term)
+            # breakpoint()
+            term = Term(op="sqrt", subterms=[Term(op="^", subterms=[term, "2"], parent=parent_term, is_var=False)])
+            # assert_cmd.term.subterms[0] = Term(op="sqrt", subterms=[Term(op="^", subterms=[term, "2"], parent=parent_term, is_var=False)])
+            print("now it is: ", term)
+            # print("in assert_cmd_sub changed: ", assert_cmd.term.subterms[0])
+            return True
+        else:
+            for subterm in term.subterms:
+                # print("current subterm: ", subterm)
+                # print("its parent: ", term)
+                return self.execute_mutation(subterm, term, assert_cmd) 
+
+            return False
 
     def mutate_var(self):
-        # TODO: test/verify this implementation. 
-        # TODO: We need to work with the terms that represent the vars, not the vars themselves. Change.
         success = False
-        for _ in range(self.args.modulo): # Q: what is modulo?
-            max_choices = len(self.formula.vars)
-            for _ in range(max_choices):
-                var_in_formula = random.choice(self.formula.vars)
-                replacement_var = self.get_replacement_var(var_in_formula) 
-                if replacement_var:
-                    success = True
-                    self.formula.vars.append(replacement_var)
-                    self.formula.types[replacement_var.name] = replacement_var.type
-                    break
-        print("formula", self.formula)
-        print("success", success)
-        print("skip_seed", False)
+        assert_comd = random.choice(self.formula.assert_cmd)
+
+        current_term = assert_comd.term
+        # print("current term: ", current_term)
+        # print("its parent: ", current_term.parent)
+        success = self.execute_mutation(current_term, current_term.parent, assert_cmd=assert_comd)
+
+        # mutated_term = Term(op="sqrt", subterms=[Term(op="^", subterms=[var_to_mutate_as_term, "2"])])
+        # mutated_term = Term(op="log",  subterms=[Term(op="^", subterms=["2", var_to_mutate_as_term])])
+        # print("mutated_term: ", mutated_term)
+
+        # var_to_mutate_as_term = mutated_term
+
+        # breakpoint()
+        print("formula: \n", self.formula)
+        print("success: ", success)
+        print("skip_seed: ", False)    
         return self.formula, success, False 
     
 
