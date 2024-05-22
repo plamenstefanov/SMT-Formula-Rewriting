@@ -1,6 +1,9 @@
 # SMT-Formula-Rewriting
+
+## Description
 This project is to design/automatically generate rewriting rules for SMT formulas to conduct satisfiability-preserving rewriting. After the rewriting the solving result should be the same. The rewriting rules can be used to 1) find soundness bugs in SMT solvers, 2) uncover potential performance/incompleteness issues, or 3) improve the performance.
 
+## Workflow
 1. typefuzz "z3 model_validate=true;cvc4 --check-models -m -i -q" benchmarks
     - typefuzz "<solver_clis>" <seed_path>
       - <solver_clis>: a sequence of SMT solvers command lines separated by semicolons. At least two SMT solvers command lines are necessary.
