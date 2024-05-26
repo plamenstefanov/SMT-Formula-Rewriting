@@ -75,7 +75,7 @@ If you want to run only the mutate_type or only mutate_var mutation then modify 
 
 If you want to run the mutations then know how do they preserve satisfiability
    - mutate_type
-      - Integer arithmetic sat formulas (LIA, QF_LIA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to sat
-      - Real arithmetic unsat formulas (LRA, NRA, QF_LRA, QF_NRA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to unsat
+      - If you choose as seed integer arithmetic sat formulas (LIA, QF_LIA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to sat
+      - If you choose as seed real arithmetic unsat formulas (LRA, NRA, QF_LRA, QF_NRA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to unsat
    - mutate_var
       - Integer arithmetic & Real arithmetic sat/unsat formulas (LIA, LRA, NRA, QF_LIA, QF_LRA, QF_NRA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to sat/unsat
