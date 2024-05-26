@@ -61,7 +61,21 @@ python crossfuzz "z3 model_validate=true" seeds/QF_LIA/sat/
    - implemented 2 imporant functions : mutate_type, mutate_var
       - mutate_type - extracts all global variables from a randomly chosen assert command in the formula and chooses randomly a variable of type Int or of type Real. Its type is mutated as per construction.
       - mutate_var -  walks recursively over all of the terms in a randomly chosen assert command in a formula and whenever encounters a term that corresponds to a variable, mutates it as per construction with a 50\% probability and continues exploring the terms in the command.
-5. The results - three new folders (bugs, logs, scratch)
-    - Bugs : hecks for crashes, segfaults, invalid models and soundness issues, ignores duplicates. Stores bug triggers.
+4. The results - three new folders (bugs, logs, scratch)
+    - Bugs : crashes, segfaults, invalid models and soundness issues, ignores duplicates. Stores bug triggers.
     - Logs : logs
-    - Scratch : folder where the mutant formulas are dumped
+    - Scratch : folder where the mutant formulas are dumped during runtime
+
+Modifications
+------------
+If you want to modify the timeout, oracle or iterations value then look at:
+   -  ```yinyang/src/base/ArgumentParser.py```
+
+If you want to run only the mutate_type or only mutate_var mutation then modify the mutate function in ```yinyang/src/mutators/CrossTheoryMutation.py```.
+
+If you want to run the mutations then know how do they preserve satisfiability
+   - mutate_type
+      - Integer arithmetic sat formulas (LIA, QF_LIA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to sat
+      - Real arithmetic unsat formulas (LRA, NRA, QF_LRA, QF_NRA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to unsat
+   - mutate_var
+      - Integer arithmetic & Real arithmetic sat/unsat formulas (LIA, LRA, NRA, QF_LIA, QF_LRA, QF_NRA) => set oracle in ```yinyang/src/base/ArgumentParser.py``` to sat/unsat
