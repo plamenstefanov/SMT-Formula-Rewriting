@@ -2,7 +2,10 @@
 
 Description
 ------------
-This project is to design/automatically generate rewriting rules for SMT formulas to conduct satisfiability-preserving rewriting. After the rewriting the solving result should be the same. The rewriting rules can be used to 1) find soundness bugs in SMT solvers, 2) uncover potential performance/incompleteness issues, or 3) improve the performance.
+This project is to design/automatically generate rewriting rules for SMT formulas to conduct satisfiability-preserving rewriting. After the rewriting the solving result should be the same. The rewriting rules can be used to 
+   - find soundness bugs in SMT solvers
+   - uncover potential performance/incompleteness issues
+   - improve the performance.
 
 Installation
 ------------
@@ -20,11 +23,11 @@ Usage
 
 2. **Get and build SMT solvers** for testing. Install Z3. 
 
-3. **Run yinyang** on the benchmarks e.g. with Z3.  
+3. **Run yinyang (with crossfuzz)** on the benchmarks e.g. with Z3.  
 ```bash
 python crossfuzz "z3 model_validate=true" PATH_TO_SMT-LIB_FOLDER/PATH_TO_SMT-LIB_FILE
 ```
-yinyang will by default randomly select formulas from the folder PATH_TO_SMT-LIB_FOLDER and generate 10 mutants per seed formula. If a bug has been found, the bug trigger is stored in `./bugs`. You can use the shortcut CTRL+C to terminate yinyang manually.
+Running yinyang with crossfuzz mutation strategy will by default randomly select formulas from the folder PATH_TO_SMT-LIB_FOLDER and generate 10 mutants per seed formula. If a bug has been found, the bug trigger is stored in `./bugs`. You can use the shortcut CTRL+C to terminate the run manually.
 
 Workflow
 ------------
