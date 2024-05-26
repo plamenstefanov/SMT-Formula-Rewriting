@@ -68,7 +68,7 @@ def add_common_args(parser, rootpath, current_dir):
     parser.add_argument(
         "-t",
         "--timeout",
-        default=8,
+        default=5,
         metavar="secs",
         type=int,
     )
@@ -112,7 +112,7 @@ def add_opfuzz_args(parser, rootpath, current_dir):
     parser.add_argument(
         "-i",
         "--iterations",
-        default=1,
+        default=300,
         metavar="<N>",
         type=int,
     )
@@ -213,6 +213,40 @@ def add_yinyang_args(parser, rootpath, current_dir):
         action='store_true',
     )
 
+def add_crossfuzz_args(parser, rootpath, current_dir):
+    parser.add_argument(
+        "-o",
+        "--oracle",
+        default="unsat",
+        metavar="{sat,unsat}",
+        type=str,
+    )
+    parser.add_argument(
+        "-i",
+        "--iterations",
+        default=10,
+        metavar="<N>",
+        type=int,
+    )
+    parser.add_argument(
+        "-m",
+        "--modulo",
+        default=2,
+        metavar="<N>",
+        type=int,
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version="crossfuzz " + VERSION + " " + "(" + COMMIT + ")",
+    )
+    parser.add_argument(
+        "-c",
+        "--config",
+        metavar="path_to_file",
+        default=rootpath + "/yinyang/config/operator_mutations.txt",
+    )
 
 def build_opfuzz_parser(current_dir, usage):
     parser = ArgumentParser(
@@ -221,11 +255,6 @@ def build_opfuzz_parser(current_dir, usage):
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False,
     )
-    #parser is an ArgumentParser (object for parsing command line strings into Python objects)
-    #parser.prog
-    #parser.add_argument
-    #parser.usage
-    #... - you can use all properties of the ArgumentParser object
     add_common_args(parser, ROOTPATH, current_dir)
     add_opfuzz_args(parser, ROOTPATH, current_dir)
 
@@ -239,7 +268,8 @@ def build_crossfuzz_parser(current_dir, usage):
         add_help=False,
     )
     add_common_args(parser, ROOTPATH, current_dir)
-    add_opfuzz_args(parser, ROOTPATH, current_dir)
+    # CHANGED
+    add_crossfuzz_args(parser, ROOTPATH, current_dir)
 
     return parser
 

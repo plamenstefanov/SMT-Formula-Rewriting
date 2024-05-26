@@ -26,11 +26,18 @@ import copy
 class Script:
     def __init__(self, commands, global_vars):
         self.commands = commands
+            # cmds = [DeclareFun(), Define(), Assert(), DeclareConst(), Eval(), FunDecl()]
+            #               objects that have attributes (variables) symbols, terms, sorts, sorted_vars, attr, fun_decls
+            #                   the way these attributes (variables) are initialized depends on visitTerm()
+            #                       visitTerm() <- returns (mostly) a Term object
+            #                           the Term object can represent (almost?) anything from our SMT_LIB formula.
+            #                           It has a lot of attributes (variables) that help specify what the Term object represents
+            #                           Look at the __eq__ func in the object Term to see when two Terms are equal.
         self.vars, self.types = self._decl_commands()
         self.global_vars = global_vars
         self.free_var_occs = []
-        self.op_occs = []
-        self.assert_cmd = []
+        self.op_occs = [] # list of terms? maybe not, maybe smth else?
+        self.assert_cmd = [] # list of Assert() commands
 
         for cmd in self.commands:
             if isinstance(cmd, Assert):
@@ -611,6 +618,10 @@ class Term:
         occs = []
         self.find_all(e, occs)
         for occ in occs:
+            # A shallow copy creates a new array, but it does not create new copies of the elements within the array. 
+            # Instead, it points to the same elements as the original array. 
+            # A deep copy, on the other hand, creates a completely independent copy of both the array and its data. 
+            # It does not share any data with the original array.
             occ._initialize(
                 name=copy.deepcopy(repl.name),
                 type=copy.deepcopy(repl.type),
@@ -720,3 +731,7 @@ class Term:
 
         if self.is_var:
             return self.name + ":" + self.type
+        #TODO - revert (remove these lines)
+        else:
+            subs_str = self.__get_subterm_str__()
+            return "(" + self.op.__str__() + " " + subs_str + ")"

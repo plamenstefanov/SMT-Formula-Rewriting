@@ -93,12 +93,14 @@ def prepare_seed(formula):
 
 def generate_ast(stream, prep_seed=True):
     error_listener = ErrorListener()
+    # stream = SMT_LIB file stream
     lexer = SMTLIBv2Lexer(stream)
     lexer.removeErrorListeners()
     lexer.addErrorListener(error_listener)
     stream = CommonTokenStream(lexer)
     parser = SMTLIBv2Parser(stream)
     parser.removeErrorListeners()
+    # tree = parsed SMT_LIB file stream (AST made out of the SMT_LIB file stream?)
     tree = parser.start()
     vis = AstVisitor()
     formula = vis.visitStart(tree)

@@ -96,6 +96,9 @@ class TypeAwareOpMutation(Mutator):
         for _ in range(self.args.modulo):
             max_choices = len(self.formula.op_occs)
             for _ in range(max_choices):
+                # objects in python are passed by reference, so when we make changes to op_occ which is part of an attribute of self.formula
+                # we actually make changes to the self.formula object
+                # Hence, at the end when we return self.formula, we return the changed object
                 op_occ = random.choice(self.formula.op_occs)
                 replacee = self.get_replacee(op_occ)
                 if replacee:

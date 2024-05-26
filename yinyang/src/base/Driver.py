@@ -130,7 +130,25 @@ def check_fusion():
         print("error: please provide at one SMT solvers", flush=True)
         exit(ERR_USAGE)
 
+# CHANGED
+def check_crossfuzz():
+    if len(args.PATH_TO_SEEDS) < 1:
+        print(
+            "error: please provide at least one seed for the crossfuzz strategy",
+            flush=True,
+        )
+        exit(ERR_USAGE)
 
+    if (len(args.SOLVER_CLIS) < 1):
+        print("error: please provide at least one SMT solver", flush=True)
+        exit(ERR_USAGE)
+
+    for i in range(len(args.SOLVER_CLIS)):
+        if not ("z3" in args.SOLVER_CLIS[i]):
+            print("error:  For now, you should provide only the z3 SMT solver", flush=True)
+            exit(ERR_USAGE)
+
+# CHANGED
 def run_checks(parser, strategy):
     global args
     args = parser.parse_args()
@@ -144,8 +162,11 @@ def run_checks(parser, strategy):
     create_log_folder()
     create_scratch_folder()
     get_seeds()
+    # CHANGED
     if strategy in ["opfuzz", "typefuzz"]:
         check_opfuzz()
-    else:
+    elif strategy in ["yinyang"]:
         check_fusion()
+    else:
+        check_crossfuzz()
     return args

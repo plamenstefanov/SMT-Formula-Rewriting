@@ -80,6 +80,13 @@ class AstVisitor(SMTLIBv2Visitor):
         cmds = []
         for c in ctx.command():
             cmds.append(self.visitCommand(c))
+            # cmds = [DeclareFun(), Define(), Assert(), DeclareConst(), Eval(), FunDecl()]
+            #               objects that have attributes (variables) symbols, terms, sorts, sorted_vars, attr, fun_decls
+            #                   the way these attributes (variables) are initialized depends on visitTerm()
+            #                       visitTerm() <- returns (mostly) a Term object
+            #                           the Term object can represent (almost?) anything from our SMT_LIB formula.
+            #                           It has a lot of attributes (variables) that help specify what the Term object represents
+            #                           Look at the __eq__ func in the object Term to see when two Terms are equal.
         return Script(cmds, self.global_vars)
 
     def add_to_globals(self, identifier, input_sorts, output_sort):

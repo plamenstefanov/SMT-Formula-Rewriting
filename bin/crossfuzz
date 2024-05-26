@@ -18,7 +18,8 @@ from yinyang.src.base.Exitcodes import ERR_USAGE, ERR_INTERNAL
 
 from yinyang.src.core.Fuzzer import Fuzzer
 
-from yinyang.config.OpfuzzHelptext import (
+# CHANGED
+from yinyang.config.CrossfuzzHelptext import (
     usage,
     header,
     short_description,
@@ -28,16 +29,9 @@ from yinyang.config.OpfuzzHelptext import (
 
 
 def main():
-    #TODO: add crossfuzz parser logic - logic that parses the command line
+    # CHANGED
     parser = build_crossfuzz_parser(current_dir, usage)
-    #parser is an ArgumentParser (object for parsing command line strings into Python objects)
-    #parser.prog
-    #parser.add_argument
-    #parser.usage
-    #... - you can use all properties of the ArgumentParser object
 
-    # "Parses the command line ..." - if, elif, else
-    # -> line 85
     if len(sys.argv) == 1:
 
         # Show medium-length description when called without args containing
@@ -65,20 +59,11 @@ def main():
         exit(OK_NOBUGS)
 
     else:
-        # "... and reads in the seeds" -> Fuzzer.py, Line 139
+        # CHANGED
         args = run_checks(parser, "crossfuzz")
-        #run_checks goes through the directory specified on the cmd line and looks for all files ending with .smt2 in it
-        #args.PATH_TO_SEEDS = list of .smt2 files in that directory
-        #when initializing the parser we do parser.add_argument() which defines the attributes which args can access, i.e
-        #args.PATH_TO_SEEDS, args.SOLVER_CLIS, args.logfolder, args.bugsfolder, args.scratchfolder 
-        #args = parser.parse_args() := converts what is passed on the cmd line into object with attributes
-        
-        #print("parser._actions")
-        #for i in parser._actions: 
-        #    print(i)
-        #    print()
 
         try:
+            # CHANGED
             fuzzer = Fuzzer(args, "crossfuzz")
 
             def print_stats():

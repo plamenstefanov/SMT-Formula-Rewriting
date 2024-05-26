@@ -1,7 +1,0 @@
-(declare-const x Int)
-(declare-const y Int)
-(declare-const w Bool)
-(assert (= x (- x)))
-(assert (distinct w (= x (- y))))
-(assert w)
-(check-sat)

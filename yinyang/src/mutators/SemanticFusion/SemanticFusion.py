@@ -143,23 +143,8 @@ class SemanticFusion(Mutator):
 
         formula1, formula2 =\
             copy.deepcopy(self.formula1), copy.deepcopy(self.formula2)
-        formula3, formula4 =\
-            copy.deepcopy(self.formula1), copy.deepcopy(self.formula2)
-        #print("PRE")
-        #print(formula1)
-        #print(formula2)
-        #print()
         formula1.prefix_vars("scr1_")
         formula2.prefix_vars("scr2_")
-        formula3.prefix_vars2("scr1_")
-        formula4.prefix_vars2("scr2_")
-        #print("POST")
-        #print(str(formula1)==str(formula3))
-        #print(formula3)
-        #print(str(formula2)==str(formula4))
-        #print(formula4)
-        #print()
-        #return
 
         templates = generate_fusion_function_templates(
             formula1.global_vars,
@@ -176,7 +161,4 @@ class SemanticFusion(Mutator):
             templates
         )
         fused = self.fuse(formula1, formula2, triplets)
-        #print("FUSED")
-        #print(fused)
-        print()
         return fused, True, skip_seed
